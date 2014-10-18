@@ -1075,7 +1075,7 @@ def get_videos(id, thumbnail, trailer, parent_id, series_name):
                       }]
 
 
-            src_list = ['movreel', 'mightyupload', 'promptfile', 'firedrive', 'putlocker', 'novamov', 'nowvideo', 'gorillavid']
+            # src_list = ['movreel', 'mightyupload', 'promptfile', 'firedrive', 'putlocker', 'novamov', 'nowvideo', 'gorillavid']
             #, 'novamov', 'nowvideo', 'gorillavid']
             #'lemupload',
             #'promptfile', 'mightyupload',
@@ -1083,35 +1083,51 @@ def get_videos(id, thumbnail, trailer, parent_id, series_name):
             # 'firedrive', 'putlocker',
 
             for urls in jsonObj:
-                src_order = 0
-                for src in src_list:
-                    if urls['URL'].find(src) >= 0:
-                        break
-                    src_order += 1
-
-                urls['src_order'] = src_order
-
                 if urls['resolved_URL'] == '':
                     urls['resolved_URL'] = 'NONE'
-                    if urls['src_order'] > 0 and urls['last_resolved'] != '0000-00-00 00:00:00':
-                        #'0000-00-00 00:00:00' means this is a new entry and hasn't been resolved yet
-                        #should get the benifit of doubt!
-                        urls['src_order'] = len(src_list)+1
-                    #all un-resolved urls will be marked as <len(src_list)+1>
-                    #except for the first src <movreel> which will be shown whenever possible
-                #elif:
-                    #put resolved url above all by making it's src_order set to -1
-                    #urls['src_order'] = len(src_list)
 
-            jsonObj.sort(key=lambda x: x['src_order'])
+                if urls['view_count'] != '':
+                    urls['view_count'] = int(urls['view_count'])
+                else:
+                    urls['view_count'] = 0
+
+                if urls['verified'] != '':
+                    urls['verified'] = int(urls['verified'])
+                else:
+                    urls['verified'] = 0
+
+
+                # src_order = 0
+                # for src in src_list:
+                #     if urls['URL'].find(src) >= 0:
+                #         break
+                #     src_order += 1
+                #
+                # urls['src_order'] = src_order
+                #
+                # if urls['resolved_URL'] == '':
+                #     urls['resolved_URL'] = 'NONE'
+                #     if urls['src_order'] > 0 and urls['last_resolved'] != '0000-00-00 00:00:00':
+                #         #'0000-00-00 00:00:00' means this is a new entry and hasn't been resolved yet
+                #         #should get the benifit of doubt!
+                #         urls['src_order'] = len(src_list)+1
+                #     #all un-resolved urls will be marked as <len(src_list)+1>
+                #     #except for the first src <movreel> which will be shown whenever possible
+                # #elif:
+                #     #put resolved url above all by making it's src_order set to -1
+                #     #urls['src_order'] = len(src_list)
+
+            # jsonObj.sort(key=lambda x: x['src_order'])
+            # jsonObj.sort(key=lambda x: x['view_count'], reverse=True)
+            jsonObj.sort(key=lambda x: x['verified'], reverse=True)
 
             count = 0
             sd_count = 0
             for urls in jsonObj:
                 # if parent_id == '1' and urls['resolved_URL'] == 'NONE':
                 # if un-resolved and not in premium list, then continue
-                if urls['resolved_URL'] == 'NONE' and urls['src_order'] == len(src_list)+1:
-                    continue
+                # if urls['resolved_URL'] == 'NONE' and urls['src_order'] == len(src_list)+1:
+                #     continue
 
                 source_quality = ''
                 source_url = urls['URL'][urls['URL'].find('://')+3:]
@@ -1750,7 +1766,7 @@ def search(category):
                                                                'Mark as {0}'.format(watched_state),
                                                                'XBMC.RunPlugin(%s)' % plugin.url_for('mark_as_{0}'.format(watched_state.lower()),
                                                                                                  video_type=watch_info['video_type'],
-                                                                                                 title=categories['title'].encode('utf-8'),
+                                                                                                 title=categories['title'],
                                                                                                  imdb_id=mvl_meta['imdb_id'],
                                                                                                  year=watch_info['year'],
                                                                                                  season=watch_info['season'],
