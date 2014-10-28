@@ -836,7 +836,7 @@ def get_categories(id, page):
                         watch_info = {'video_type': 'movie', 'season': 'NONE', 'episode': 'NONE', 'year': '0'}
 
                         if categories['top_level_parent'] == '1':
-                            mvl_meta = create_meta('movie', categories['title'].encode('utf-8'), categories['release_date'], mvl_img)
+                            mvl_meta = create_meta('movie', categories['title'].encode('utf-8'), categories['year'], mvl_img, imdb_id=categories['imdb_id'])
                             watch_info['year'] = mvl_meta['year']
                         elif categories['top_level_parent'] == '3':
                             #playable items of TV show are episodes
@@ -1431,13 +1431,13 @@ def play_video(url, resolved_url, title, video_type, meta):
     #	  dialog_msg()
     #	  hide_busy_dialog()
 
-def create_meta(video_type, title, year, thumb, sub_cat=None):
+def create_meta(video_type, title, year, thumb, sub_cat=None, imdb_id=''):
     try:
         year = int(year)
     except:
         year = 0
     year = str(year)
-    meta = {'title': title, 'year': year, 'imdb_id': '', 'overlay': ''}
+    meta = {'title': title, 'year': year, 'imdb_id': '', 'overlay': '', 'duration': '', 'playcount': '' }
     try:
         if video_type == 'tvshow':
             meta = __metaget__.get_meta(video_type, title)
@@ -1445,7 +1445,7 @@ def create_meta(video_type, title, year, thumb, sub_cat=None):
                 meta = __metaget__.get_meta(video_type, title, year=year)
 
         elif video_type == 'movie':	 # movie
-            meta = __metaget__.get_meta(video_type, title, year=year)
+            meta = __metaget__.get_meta(video_type, title, year=year, imdb_id=imdb_id)
             alt_id = meta['tmdb_id']
 
         elif video_type == 'episode': # tv show episode
@@ -1689,7 +1689,7 @@ def search(category):
                             watch_info = {'video_type': 'movie', 'season': 'NONE', 'episode': 'NONE', 'year': '0'}
 
                             if categories['top_level_parent'] == '1':
-                                mvl_meta = create_meta('movie', categories['title'], categories['release_date'], mvl_img)
+                                mvl_meta = create_meta('movie', categories['title'], categories['year'], mvl_img, imdb_id=categories['imdb_id'])
                                 watch_info['year'] = mvl_meta['year']
                             elif categories['top_level_parent'] == '3':
                                 #playable items of TV show are episodes
@@ -2014,7 +2014,7 @@ def get_azlist(key, page, category):
                         watch_info = {'video_type': 'movie', 'season': 'NONE', 'episode': 'NONE', 'year': ''}
 
                         if results['top_level_parent'] == '1':
-                            mvl_meta = create_meta('movie', results['title'], results['release_date'], mvl_img)
+                            mvl_meta = create_meta('movie', results['title'], results['year'], mvl_img, imdb_id=results['imdb_id'])
                             watch_info['year'] = mvl_meta['year']
                         elif results['top_level_parent'] == '3':
                             #playable items of TV show are episodes
